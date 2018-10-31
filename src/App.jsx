@@ -1,3 +1,4 @@
 import React from "react";
+import { Button } from "semantic-ui-react";
 
-export default () => <h1>Hello World!</h1>;
+export default () => <Button>Hello Semantic ui react!</Button>;
