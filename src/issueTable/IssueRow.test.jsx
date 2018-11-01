@@ -10,6 +10,7 @@ describe("Issue row", () => {
       <Table>
         <Table.Body>
           <IssueRow
+            id={123}
             number={123}
             title="Problem deploying"
             created_at="2018-10-31T22:17:12Z"

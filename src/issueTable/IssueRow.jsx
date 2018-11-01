@@ -2,6 +2,7 @@ import React from "react";
 import { Table } from "semantic-ui-react";
 
 export default ({
+  id,
   number,
   title,
   created_at: createdAt,
@@ -9,7 +10,7 @@ export default ({
   state,
   labels
 }) => (
-  <Table.Row>
+  <Table.Row key={id}>
     <Table.Cell>{number}</Table.Cell>
     <Table.Cell>{title}</Table.Cell>
     <Table.Cell>{new Date(createdAt).toLocaleString()}</Table.Cell>
