@@ -1,5 +1,6 @@
 import React from "react";
 import { Table } from "semantic-ui-react";
+import IssueCell from "./IssueCell";
 
 export default ({
   id,
@@ -8,14 +9,15 @@ export default ({
   created_at: createdAt,
   updated_at: updatedAt,
   state,
-  labels
+  labels,
+  html_url: href
 }) => (
   <Table.Row key={id}>
-    <Table.Cell>{number}</Table.Cell>
-    <Table.Cell>{title}</Table.Cell>
-    <Table.Cell>{new Date(createdAt).toLocaleString()}</Table.Cell>
-    <Table.Cell>{new Date(updatedAt).toLocaleString()}</Table.Cell>
-    <Table.Cell>{labels.map(label => label.name).join(", ")}</Table.Cell>
-    <Table.Cell>{state}</Table.Cell>
+    <IssueCell href={href} text={number} />
+    <IssueCell href={href} text={title} />
+    <IssueCell href={href} text={new Date(createdAt).toLocaleString()} />
+    <IssueCell href={href} text={new Date(updatedAt).toLocaleString()} />
+    <IssueCell href={href} text={labels.map(label => label.name).join(", ")} />
+    <IssueCell href={href} text={state} />
   </Table.Row>
 );

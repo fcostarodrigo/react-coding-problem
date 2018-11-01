@@ -23,7 +23,7 @@ export default class IssueTable extends React.PureComponent {
     return loading ? (
       <Loader active inline="centered" />
     ) : (
-      <Table>
+      <Table celled selectable>
         <Table.Header>
           <Table.Row>
             <Table.HeaderCell>Issue Number</Table.HeaderCell>
