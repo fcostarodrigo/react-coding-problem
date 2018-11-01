@@ -1,4 +1,4 @@
 import React from "react";
-import { Button } from "semantic-ui-react";
+import IssueTable from "./issueTable/IssueTable";
 
-export default () => <Button>Hello Semantic ui react!</Button>;
+export default () => <IssueTable />;
