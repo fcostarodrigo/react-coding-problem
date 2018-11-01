@@ -1,4 +1,4 @@
-import listIssues from "./service";
+import listIssues from "./listIssues";
 
 describe("Issue table service", () => {
   describe("List issues", () => {
