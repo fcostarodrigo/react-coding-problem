@@ -1,7 +1,7 @@
 import React from "react";
 import { Table, Loader, Pagination } from "semantic-ui-react";
-import IssueRow from "./IssueRow";
-import listIssues from "./listIssues";
+import IssueRow from "./components/IssueRow";
+import listIssues from "./services/listIssues";
 
 export default class IssueTable extends React.PureComponent {
   state = {

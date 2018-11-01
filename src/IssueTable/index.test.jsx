@@ -2,12 +2,12 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { findRenderedComponentWithType } from "react-dom/test-utils";
 import { Pagination } from "semantic-ui-react";
-import IssueTable from "./IssueTable";
-import listIssues from "./listIssues";
-import IssueRow from "./IssueRow";
+import IssueTable from ".";
+import listIssues from "./services/listIssues";
+import IssueRow from "./components/IssueRow";
 
-jest.mock("./IssueRow");
-jest.mock("./listIssues");
+jest.mock("./components/IssueRow");
+jest.mock("./services/listIssues");
 
 describe("Issue table", () => {
   beforeEach(() => {

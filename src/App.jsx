@@ -1,6 +1,6 @@
 import React from "react";
 import { Header, Icon, Segment, Container } from "semantic-ui-react";
-import IssueTable from "./issueTable/IssueTable";
+import IssueTable from "./IssueTable";
 
 export default () => (
   <React.Fragment>
