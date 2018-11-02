@@ -2,6 +2,15 @@
 
 React issue status from GitHub.
 
+## Features
+
+- Sort by created at and updated at.
+- Click on issue to go to its page.
+- Pagination.
+- Error boundary.
+- Show spinner when loading.
+- Automated tests.
+
 ## Setup
 
 ```bash
@@ -13,6 +22,14 @@ yarn install
 ```bash
 yarn start
 ```
+
+## Creating build
+
+```bash
+yarn run build
+```
+
+Build is saved at the build folder.
 
 ## Running tests
 
