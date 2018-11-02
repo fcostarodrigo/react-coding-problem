@@ -1,0 +1,8 @@
+{
+  "compilerOptions": {
+    "downlevelIteration": true,
+    "jsx": "react",
+    "checkJs": true,
+    "lib": ["esnext", "dom"]
+  }
+}
