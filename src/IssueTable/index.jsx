@@ -1,44 +1,94 @@
 import React from "react";
-import { Table, Loader, Pagination } from "semantic-ui-react";
+import { Table, Loader } from "semantic-ui-react";
 import IssueRow from "./components/IssueRow";
 import listIssues from "./services/listIssues";
+import Pagination from "./components/Pagination";
+import SortableHeaderCell from "./components/SortableHeaderCell";
+
+const sortDirections = ["ascending", "descending"];
 
 export default class IssueTable extends React.PureComponent {
   state = {
     issues: [],
     loading: true,
     totalPages: 0,
-    page: 1
+    page: 1,
+    sortColumn: "createdAt",
+    sortDirection: "descending"
   };
 
   async componentDidMount() {
     try {
-      const { page } = this.state;
-      const { issues, totalPages } = await listIssues({ page });
-      this.setState({ issues, totalPages });
+      const { page, sortColumn, sortDirection } = this.state;
+      await this.load({ page, sortColumn, sortDirection });
     } finally {
       this.setState({ loading: false });
     }
   }
 
-  handlePaginationChange = async (e, { activePage: page }) => {
-    const { issues, totalPages } = await listIssues({ page });
-    this.setState({ issues, totalPages, page });
+  handleSort = column => {
+    const { sortColumn, page } = this.state;
+    let { sortDirection } = this.state;
+
+    if (column === sortColumn) {
+      const index = sortDirections.indexOf(sortDirection);
+      sortDirection = sortDirections[(index + 1) % sortDirections.length];
+    } else {
+      [sortDirection] = sortDirections;
+    }
+
+    this.load({ page, sortColumn: column, sortDirection });
   };
 
+  handleCreatedAtSort = () => this.handleSort("createdAt");
+
+  handleUpdatedAtSort = () => this.handleSort("updatedAt");
+
+  handlePaginationChange = (e, { activePage: page }) => {
+    const { sortColumn, sortDirection } = this.state;
+    this.load({ page, sortColumn, sortDirection });
+  };
+
+  async load({ page, sortColumn, sortDirection }) {
+    const { issues, totalPages } = await listIssues({
+      page,
+      sortColumn,
+      sortDirection
+    });
+
+    this.setState({ issues, totalPages, page, sortDirection, sortColumn });
+  }
+
   render() {
-    const { loading, issues, totalPages, page } = this.state;
+    const {
+      loading,
+      issues,
+      totalPages,
+      page,
+      sortColumn,
+      sortDirection
+    } = this.state;
 
     return loading ? (
       <Loader active inline="centered" />
     ) : (
-      <Table celled selectable>
+      <Table celled selectable sortable fixed>
         <Table.Header>
           <Table.Row>
             <Table.HeaderCell>Issue Number</Table.HeaderCell>
             <Table.HeaderCell>Title</Table.HeaderCell>
-            <Table.HeaderCell>Created At</Table.HeaderCell>
-            <Table.HeaderCell>Updated At</Table.HeaderCell>
+            <SortableHeaderCell
+              onClick={this.handleCreatedAtSort}
+              sortDirection={sortColumn === "createdAt" ? sortDirection : null}
+            >
+              Created At
+            </SortableHeaderCell>
+            <SortableHeaderCell
+              onClick={this.handleUpdatedAtSort}
+              sortDirection={sortColumn === "updatedAt" ? sortDirection : null}
+            >
+              Updated At
+            </SortableHeaderCell>
             <Table.HeaderCell>Labels</Table.HeaderCell>
             <Table.HeaderCell>State</Table.HeaderCell>
           </Table.Row>
@@ -48,10 +98,9 @@ export default class IssueTable extends React.PureComponent {
           <Table.Row>
             <Table.HeaderCell colSpan="6">
               <Pagination
-                activePage={page}
+                page={page}
                 onPageChange={this.handlePaginationChange}
                 totalPages={totalPages}
-                floated="right"
               />
             </Table.HeaderCell>
           </Table.Row>

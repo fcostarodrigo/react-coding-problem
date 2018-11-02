@@ -1,12 +1,14 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { findRenderedComponentWithType } from "react-dom/test-utils";
-import { Pagination } from "semantic-ui-react";
 import IssueTable from ".";
 import listIssues from "./services/listIssues";
 import IssueRow from "./components/IssueRow";
+import Pagination from "./components/Pagination";
+import SortableHeaderCell from "./components/SortableHeaderCell";
 
-jest.mock("./components/IssueRow");
+jest.mock("./components/IssueRow", () => jest.fn(() => null));
+jest.mock("./components/Pagination", () => jest.fn(() => null));
+jest.mock("./components/SortableHeaderCell", () => jest.fn(() => null));
 jest.mock("./services/listIssues");
 
 describe("Issue table", () => {
@@ -14,22 +16,22 @@ describe("Issue table", () => {
     jest.clearAllMocks();
   });
 
-  it("should render", done => {
+  it("should render", async () => {
     const div = document.createElement("div");
-    listIssues.mockResolvedValueOnce({
-      totalPages: 10,
-      issues: [{ id: 1 }, { id: 2 }]
-    });
+    listIssues.mockResolvedValueOnce({ totalPages: 10, issues: [{ id: 1 }] });
 
     ReactDOM.render(<IssueTable />, div);
-    setImmediate(() => {
-      expect(listIssues.mock.calls).toEqual([[{ page: 1 }]]);
-      ReactDOM.unmountComponentAtNode(div);
-      done();
-    });
+
+    await new Promise(setTimeout);
+
+    expect(listIssues.mock.calls).toEqual([
+      [{ page: 1, sortColumn: "createdAt", sortDirection: "descending" }]
+    ]);
+
+    ReactDOM.unmountComponentAtNode(div);
   });
 
-  it("should change page", done => {
+  it("should change page", async () => {
     const div = document.createElement("div");
     listIssues.mockResolvedValueOnce({
       totalPages: 10,
@@ -40,29 +42,75 @@ describe("Issue table", () => {
       issues: [{ id: 3 }, { id: 4 }]
     });
 
-    const component = ReactDOM.render(<IssueTable />, div);
+    ReactDOM.render(<IssueTable />, div);
 
-    setImmediate(() => {
-      expect(listIssues.mock.calls).toEqual([[{ page: 1 }]]);
-      expect(IssueRow.mock.calls).toEqual([
-        expect.arrayContaining([expect.objectContaining({ id: 1 })]),
-        expect.arrayContaining([expect.objectContaining({ id: 2 })])
-      ]);
+    await new Promise(setTimeout);
 
-      IssueRow.mockClear();
-      const pagination = findRenderedComponentWithType(component, Pagination);
-      pagination.props.onPageChange(null, { activePage: 2 });
+    expect(listIssues.mock.calls).toEqual([
+      [{ page: 1, sortColumn: "createdAt", sortDirection: "descending" }]
+    ]);
+    expect(IssueRow.mock.calls).toEqual([
+      expect.arrayContaining([expect.objectContaining({ id: 1 })]),
+      expect.arrayContaining([expect.objectContaining({ id: 2 })])
+    ]);
 
-      setImmediate(() => {
-        expect(listIssues.mock.calls).toEqual([[{ page: 1 }], [{ page: 2 }]]);
-        expect(IssueRow.mock.calls).toEqual([
-          expect.arrayContaining([expect.objectContaining({ id: 3 })]),
-          expect.arrayContaining([expect.objectContaining({ id: 4 })])
-        ]);
+    IssueRow.mockClear();
 
-        ReactDOM.unmountComponentAtNode(div);
-        done();
-      });
+    Pagination.mock.calls.reverse()[0][0].onPageChange(null, { activePage: 2 });
+
+    await new Promise(setTimeout);
+
+    expect(listIssues.mock.calls).toEqual([
+      [{ page: 1, sortColumn: "createdAt", sortDirection: "descending" }],
+      [{ page: 2, sortColumn: "createdAt", sortDirection: "descending" }]
+    ]);
+    expect(IssueRow.mock.calls).toEqual([
+      expect.arrayContaining([expect.objectContaining({ id: 3 })]),
+      expect.arrayContaining([expect.objectContaining({ id: 4 })])
+    ]);
+
+    ReactDOM.unmountComponentAtNode(div);
+  });
+
+  it("should sort issues", async () => {
+    const div = document.createElement("div");
+    listIssues.mockResolvedValueOnce({
+      totalPages: 10,
+      issues: [{ id: 1 }, { id: 2 }]
     });
+    listIssues.mockResolvedValueOnce({
+      totalPages: 10,
+      issues: [{ id: 3 }, { id: 4 }]
+    });
+
+    ReactDOM.render(<IssueTable />, div);
+
+    await new Promise(setTimeout);
+
+    expect(IssueRow.mock.calls).toEqual([
+      expect.arrayContaining([expect.objectContaining({ id: 1 })]),
+      expect.arrayContaining([expect.objectContaining({ id: 2 })])
+    ]);
+
+    IssueRow.mockClear();
+
+    SortableHeaderCell.mock.calls
+      .reverse()
+      .find(([{ sortDirection }]) => sortDirection === null)[0]
+      .onClick();
+
+    expect(listIssues.mock.calls).toEqual([
+      [{ page: 1, sortColumn: "createdAt", sortDirection: "descending" }],
+      [{ page: 1, sortColumn: "updatedAt", sortDirection: "ascending" }]
+    ]);
+
+    await new Promise(setTimeout);
+
+    expect(IssueRow.mock.calls).toEqual([
+      expect.arrayContaining([expect.objectContaining({ id: 3 })]),
+      expect.arrayContaining([expect.objectContaining({ id: 4 })])
+    ]);
+
+    ReactDOM.unmountComponentAtNode(div);
   });
 });

@@ -1,21 +1,20 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { Table } from "semantic-ui-react";
-import IssueCell from "./IssueCell";
+import SortableHeaderCell from "./SortableHeaderCell";
 
-describe("Issue cell", () => {
+describe("Sortable header cell", () => {
   it("should render", () => {
     const div = document.createElement("div");
     ReactDOM.render(
-      <Table>
-        <Table.Body>
+      <Table celled selectable sortable fixed>
+        <Table.Header>
           <Table.Row>
-            <IssueCell
-              href="https://example.com"
-              text="Help it does not work!"
-            />
+            <SortableHeaderCell onClick={() => {}} sorted="ascending">
+              Created At
+            </SortableHeaderCell>
           </Table.Row>
-        </Table.Body>
+        </Table.Header>
       </Table>,
       div
     );
