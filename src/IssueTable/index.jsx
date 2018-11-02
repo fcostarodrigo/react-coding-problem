@@ -14,16 +14,13 @@ export default class IssueTable extends React.PureComponent {
     totalPages: 0,
     page: 1,
     sortColumn: "createdAt",
-    sortDirection: "descending"
+    sortDirection: "descending",
+    error: null
   };
 
-  async componentDidMount() {
-    try {
-      const { page, sortColumn, sortDirection } = this.state;
-      await this.load({ page, sortColumn, sortDirection });
-    } finally {
-      this.setState({ loading: false });
-    }
+  componentDidMount() {
+    const { page, sortColumn, sortDirection } = this.state;
+    this.load({ page, sortColumn, sortDirection });
   }
 
   handleSort = column => {
@@ -50,13 +47,24 @@ export default class IssueTable extends React.PureComponent {
   };
 
   async load({ page, sortColumn, sortDirection }) {
-    const { issues, totalPages } = await listIssues({
-      page,
-      sortColumn,
-      sortDirection
-    });
+    try {
+      const { issues, totalPages } = await listIssues({
+        page,
+        sortColumn,
+        sortDirection
+      });
 
-    this.setState({ issues, totalPages, page, sortDirection, sortColumn });
+      this.setState({
+        issues,
+        totalPages,
+        page,
+        sortDirection,
+        sortColumn,
+        loading: false
+      });
+    } catch (error) {
+      this.setState({ error });
+    }
   }
 
   render() {
@@ -66,8 +74,11 @@ export default class IssueTable extends React.PureComponent {
       totalPages,
       page,
       sortColumn,
-      sortDirection
+      sortDirection,
+      error
     } = this.state;
+
+    if (error) throw error;
 
     return loading ? (
       <Loader active inline="centered" />

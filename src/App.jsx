@@ -1,6 +1,7 @@
 import React from "react";
 import { Header, Icon, Segment, Container } from "semantic-ui-react";
 import IssueTable from "./IssueTable";
+import ErrorBoundary from "./ErrorBoundary";
 
 export default () => (
   <React.Fragment>
@@ -10,7 +11,9 @@ export default () => (
     </Header>
     <Container>
       <Segment raised>
-        <IssueTable />
+        <ErrorBoundary>
+          <IssueTable />
+        </ErrorBoundary>
       </Segment>
     </Container>
   </React.Fragment>
